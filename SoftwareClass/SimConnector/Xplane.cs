@@ -9,7 +9,16 @@ using System.Text;
  * */
 namespace Cs.Software.SimConnector
 {
-    class Xplane
+    public class Xplane : SimInterface
     {
+        private ExtPlaneNetCore.ExtPlaneInterface extPlane { get; set; }
+        public void Connect()
+        {
+
+            if (this.extPlane == null)
+                this.extPlane = new ExtPlaneNetCore.ExtPlaneInterface();
+
+
+        }
     }
 }

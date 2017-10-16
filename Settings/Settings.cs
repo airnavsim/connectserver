@@ -8,5 +8,7 @@ namespace Cs
     {
         public static bool DebugToConsole { get; set; }
 
+        public static SettingsModel.Handlers.SimulatorSettings Simulator { get; set; }
+
     }
 }

@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <RootNamespace>Cs.Settings</RootNamespace>
-    <AssemblyName>Cs.Settings</AssemblyName>
+    <RootNamespace>Cs.SettingsModel</RootNamespace>
+    <AssemblyName>Cs.SettingsModel</AssemblyName>
   </PropertyGroup>
 
 </Project>
