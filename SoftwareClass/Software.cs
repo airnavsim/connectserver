@@ -6,10 +6,13 @@ namespace Cs.Software
 {
     public class Software
     {
+        public Cs.Debug Debug { get; set; }
         public void Run()
         {
 
-            Console.WriteLine("Class running");
+            this.Debug.Message("Class running");
+
+
         }
     }
 }

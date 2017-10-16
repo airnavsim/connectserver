@@ -4,6 +4,14 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <RootNamespace>Cs.Software</RootNamespace>
     <AssemblyName>Cs.Software</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DebugHandler\DebugHandler.csproj" />
+    <ProjectReference Include="..\ExtPlaneNet\ExtPlaneNet.csproj" />
+    <ProjectReference Include="..\Settings\Settings.csproj" />
+  </ItemGroup>
 
 </Project>
