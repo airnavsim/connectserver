@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <RootNamespace>Cs.Software</RootNamespace>
+    <AssemblyName>Cs.Software</AssemblyName>
+  </PropertyGroup>
+
+</Project>
