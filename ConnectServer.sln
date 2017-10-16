@@ -9,6 +9,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Starters", "Starters", "{73
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareClass", "SoftwareClass\SoftwareClass.csproj", "{023AB42C-5467-41D9-8685-98F8A6F15B2B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Communication", "Communication", "{D6631BED-C101-474B-AB55-FAEB97E7D5C0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtPlaneNet", "ExtPlaneNet\ExtPlaneNet.csproj", "{B61793F8-10E4-43CD-A96A-D068AB21C055}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +27,17 @@ Global
 		{023AB42C-5467-41D9-8685-98F8A6F15B2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{023AB42C-5467-41D9-8685-98F8A6F15B2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{023AB42C-5467-41D9-8685-98F8A6F15B2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B61793F8-10E4-43CD-A96A-D068AB21C055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B61793F8-10E4-43CD-A96A-D068AB21C055}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B61793F8-10E4-43CD-A96A-D068AB21C055}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B61793F8-10E4-43CD-A96A-D068AB21C055}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FB095A8E-29FA-4759-B3E2-82A1D3389EB1} = {73E2493F-5D12-48F3-8AA8-4CE54430C496}
+		{B61793F8-10E4-43CD-A96A-D068AB21C055} = {D6631BED-C101-474B-AB55-FAEB97E7D5C0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {555FB138-95C0-4F0D-BB7C-976DB379F33A}

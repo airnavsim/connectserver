@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <RootNamespace>Cs.Communication.ExtPlaneNet</RootNamespace>
+    <AssemblyName>Cs.Communication.ExtPlaneNet</AssemblyName>
+  </PropertyGroup>
+
+</Project>
