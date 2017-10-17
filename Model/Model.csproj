@@ -6,4 +6,8 @@
     <AssemblyName>Cs.Model</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Settings\DbVersionModel.cs" />
+  </ItemGroup>
+
 </Project>

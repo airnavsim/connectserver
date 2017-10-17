@@ -11,13 +11,18 @@ namespace Cs.Software
 
         private Cs.Communication.Database.DataAccess.DaServerData DaServerData { get; set; }
         private SimConnector.ISimInterface Simulator { get; set; }
+        private Handlers.SocketServerHandler Server { get; set; }
         public void Run()
         {
-            Settings.DatabaseVersionInformation = new Model.Settings.DbVersionModel()
+            Settings.VersionInformation = new Model.Settings.VersionInformationModel()
             {
-                DbVersionRightNow = 0,
-                DbVersionAtleast = 1
+                AppVersion = 0,
+                AppRelease = 0,
+                AppBuild = 1,
+                DbVersionAtleast = 1,
+                DbVersionRightNow = 0
             };
+
 
             this.DaServerData = new Cs.Communication.Database.DataAccess.DaServerData();
 
@@ -41,7 +46,7 @@ namespace Cs.Software
 
             this.GetSettingsFromDatabase();
 
-            if (Settings.DatabaseVersionInformation.DbVersionRightNow != Settings.DatabaseVersionInformation.DbVersionAtleast)
+            if (Settings.VersionInformation.DbVersionRightNow != Settings.VersionInformation.DbVersionAtleast)
             {
                 Debug.Error("Database wrong version");
                 return;
@@ -55,9 +60,28 @@ namespace Cs.Software
             ZDebug = "sdfdsf";
 
 
+            var dsfdsf = Settings.Server;
+
+
+            this.Server = new Handlers.SocketServerHandler();
+            this.Server.Debug = this.Debug;
+            this.Server.Start();
+
+
+            ZDebug = "sdfdsf";
+            ZDebug = "sdfdsf";
+            ZDebug = "sdfdsf";
+            ZDebug = "sdfdsf";
+
             //Settings.Simulator.SimType = SettingsModel.Handlers.SimTypeEnum.xplane11Ext;
             //Settings.Simulator.Host = "172.16.100.88";
             //Settings.Simulator.Port = 51000;
+
+            while (true)
+            {
+                System.Threading.Thread.Sleep(1000);
+
+            }
 
 
 
@@ -107,11 +131,11 @@ namespace Cs.Software
             {
                 try
                 {
-                    Settings.DatabaseVersionInformation.DbVersionRightNow = Convert.ToInt16(TmpSettings["dbversion"]);
+                    Settings.VersionInformation.DbVersionRightNow = Convert.ToInt16(TmpSettings["dbversion"]);
                 }
                 catch
                 {
-                    Settings.DatabaseVersionInformation.DbVersionRightNow = 0;
+                    Settings.VersionInformation.DbVersionRightNow = 0;
                     Debug.Error("Error reading from database");
                     return false;
 
@@ -120,7 +144,7 @@ namespace Cs.Software
             }
             else
             { 
-                Settings.DatabaseVersionInformation.DbVersionRightNow = 0;
+                Settings.VersionInformation.DbVersionRightNow = 0;
                 Debug.Error("Database missing values");
                 return false;
             }

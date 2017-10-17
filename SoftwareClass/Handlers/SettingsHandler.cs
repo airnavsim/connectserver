@@ -138,9 +138,8 @@ namespace Cs.Software.Handlers
                 SleepTimeWhenQueryFalue = 5000
             };
 
-
-
-
+            Settings.Server = FileSettingsModel.Srv;
+            
             Debug.Info("global.cfg settings imported");
 
             return true;
