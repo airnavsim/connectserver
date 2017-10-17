@@ -24,9 +24,8 @@ namespace Cs.Software
             this.Debug.Info("Class starting");
 
 
-            //  Sett settings to x plane.
-            //  TODO read from database instead.
-
+            #region Read settings from config file
+           
             var asd = new Handlers.SettingsHandler();
             asd.Debug = this.Debug;
             if (!asd.Init())
@@ -36,8 +35,11 @@ namespace Cs.Software
                 return;
             }
 
-            this.GetSettingsFromDatabase();
+            #endregion
 
+            #region Get settings from database and check database version.
+
+            this.GetSettingsFromDatabase();
 
             if (Settings.DatabaseVersionInformation.DbVersionRightNow != Settings.DatabaseVersionInformation.DbVersionAtleast)
             {
@@ -45,9 +47,11 @@ namespace Cs.Software
                 return;
             }
 
+            #endregion
+
             // var sdfdsf = Settings.Database;
 
-            
+
             ZDebug = "sdfdsf";
 
 
