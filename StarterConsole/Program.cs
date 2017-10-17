@@ -12,13 +12,13 @@ namespace StarterConsole
             Cs.Settings.DebugToConsole = true;
 
             
-            debug.Message("Software starting");
+            debug.Info("Software starting");
             var sStart = new Cs.Software.Software();
             sStart.Debug = debug;
             sStart.Run();
 
 
-            debug.Message("End!!");
+            debug.Info("End!!");
             Console.ReadLine();
 
         }

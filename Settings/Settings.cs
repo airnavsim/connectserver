@@ -8,7 +8,10 @@ namespace Cs
     {
         public static bool DebugToConsole { get; set; }
 
-        public static SettingsModel.Handlers.SimulatorSettings Simulator { get; set; }
+        public static SettingsModel.Models.SimulatorSettings Simulator { get; set; }
+        public static SettingsModel.Models.FoldersSettings Folders { get; set; }
+        public static SettingsModel.Models.MariaDbSettings Database { get; set; }
 
+        public static Model.Settings.GlobalSettingsFileServerInfoModel Server { get; set; }
     }
 }

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Cs.SettingsModel.Handlers
+namespace Cs.SettingsModel.Models
 {
     public class SimulatorSettings
     {
         public SimTypeEnum SimType { get; set; }
-        // public XplaneSettings Xplane { get; set; }
+        
 
         public string Host { get; set; }
         public int Port { get; set; }
@@ -17,5 +17,5 @@ namespace Cs.SettingsModel.Handlers
         public DateTime ConnectedTime { get; set; }
         public DateTime LastMessage { get; set; }
     }
-    public enum SimTypeEnum { xplane10 = 0, xplane11 = 1}
+    public enum SimTypeEnum { nosim = 0, xplane11Ext = 1}
 }

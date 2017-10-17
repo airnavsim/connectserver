@@ -9,19 +9,38 @@ namespace Cs.Software
         private string ZDebug = "sdfsdf";
         public Cs.Debug Debug { get; set; }
 
-        private SimConnector.SimInterface Simulator { get; set; }
+        private SimConnector.ISimInterface Simulator { get; set; }
         public void Run()
         {
 
-            this.Debug.Message("Class starting");
+            this.Debug.Info("Class starting");
 
 
-            //  Sett settings to xplane.
-            //  TODO read from database insted.
+            //  Sett settings to x plane.
+            //  TODO read from database instead.
 
-            Settings.Simulator.SimType = SettingsModel.Handlers.SimTypeEnum.xplane11;
-            Settings.Simulator.Host = "172.16.100.144";
-            Settings.Simulator.Port = 51000;
+            var asd = new Handlers.SettingsHandler();
+            asd.Debug = this.Debug;
+            if (!asd.Init())
+            {
+                //  Error reading settings.
+
+                ZDebug = "sdfdsf";
+            }
+
+            var sdfdsf = Settings.Database;
+
+            #region Check database connection and version of database
+
+
+            #endregion
+
+            ZDebug = "sdfdsf";
+
+
+            //Settings.Simulator.SimType = SettingsModel.Handlers.SimTypeEnum.xplane11Ext;
+            //Settings.Simulator.Host = "172.16.100.88";
+            //Settings.Simulator.Port = 51000;
 
 
 
@@ -40,10 +59,21 @@ namespace Cs.Software
 
         private void ConnectToSimulator()
         {
-            if (Settings.Simulator.SimType == SettingsModel.Handlers.SimTypeEnum.xplane11)
-                this.Simulator = new SimConnector.Xplane();
+            if (Settings.Simulator.SimType == SettingsModel.Models.SimTypeEnum.nosim)
+            {
 
-            this.Simulator.Connect();
+            }
+            if (Settings.Simulator.SimType == SettingsModel.Models.SimTypeEnum.xplane11Ext)
+            {
+                this.Simulator = new SimConnector.XplaneExt();
+            }
+                
+            if (this.Simulator != null)
+            {
+                this.Simulator.Connect();
+                
+            }
+                
         }
     }
 }

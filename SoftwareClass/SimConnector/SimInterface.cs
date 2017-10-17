@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Cs.Software.SimConnector
 {
-    public interface SimInterface
+    public interface ISimInterface
     {
         void Connect();
 

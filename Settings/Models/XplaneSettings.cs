@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Cs.SettingsModel.Handlers
+namespace Cs.SettingsModel.Models
 {
     public class XplaneSettings
     {

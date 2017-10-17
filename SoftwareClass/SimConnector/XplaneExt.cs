@@ -9,14 +9,14 @@ using System.Text;
  * */
 namespace Cs.Software.SimConnector
 {
-    public class Xplane : SimInterface
+    public class XplaneExt : ISimInterface
     {
-        private ExtPlaneNetCore.ExtPlaneInterface extPlane { get; set; }
+        private ExtPlaneNetCore.ExtPlaneInterface ExtPlane { get; set; }
         public void Connect()
         {
 
-            if (this.extPlane == null)
-                this.extPlane = new ExtPlaneNetCore.ExtPlaneInterface();
+            if (this.ExtPlane == null)
+                this.ExtPlane = new ExtPlaneNetCore.ExtPlaneInterface();
 
 
         }
