@@ -9,9 +9,17 @@ namespace Cs.Software
         private string ZDebug = "sdfsdf";
         public Cs.Debug Debug { get; set; }
 
+        private Cs.Communication.Database.DataAccess.DaServerData DaServerData { get; set; }
         private SimConnector.ISimInterface Simulator { get; set; }
         public void Run()
         {
+            Settings.DatabaseVersionInformation = new Model.Settings.DbVersionModel()
+            {
+                DbVersionRightNow = 0,
+                DbVersionAtleast = 1
+            };
+
+            this.DaServerData = new Cs.Communication.Database.DataAccess.DaServerData();
 
             this.Debug.Info("Class starting");
 
@@ -24,17 +32,22 @@ namespace Cs.Software
             if (!asd.Init())
             {
                 //  Error reading settings.
-
-                ZDebug = "sdfdsf";
+                Debug.Error("Error reading settings");
+                return;
             }
 
-            var sdfdsf = Settings.Database;
-
-            #region Check database connection and version of database
+            this.GetSettingsFromDatabase();
 
 
-            #endregion
+            if (Settings.DatabaseVersionInformation.DbVersionRightNow != Settings.DatabaseVersionInformation.DbVersionAtleast)
+            {
+                Debug.Error("Database wrong version");
+                return;
+            }
 
+            // var sdfdsf = Settings.Database;
+
+            
             ZDebug = "sdfdsf";
 
 
@@ -74,6 +87,41 @@ namespace Cs.Software
                 
             }
                 
+        }
+
+        private bool GetSettingsFromDatabase()
+        {
+            //  Get settings from database
+            var TmpSettings = DaServerData.TblSetting_GetAll();
+            if (!DaServerData.QueryWasDone)
+            {
+                Debug.Error("Database connection error");
+                return false;
+            }
+
+            if (TmpSettings.ContainsKey("dbversion"))
+            {
+                try
+                {
+                    Settings.DatabaseVersionInformation.DbVersionRightNow = Convert.ToInt16(TmpSettings["dbversion"]);
+                }
+                catch
+                {
+                    Settings.DatabaseVersionInformation.DbVersionRightNow = 0;
+                    Debug.Error("Error reading from database");
+                    return false;
+
+                }
+                 
+            }
+            else
+            { 
+                Settings.DatabaseVersionInformation.DbVersionRightNow = 0;
+                Debug.Error("Database missing values");
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <RootNamespace>Cs.Software</RootNamespace>
     <AssemblyName>Cs.Software</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Database\Database.csproj" />
     <ProjectReference Include="..\DebugHandler\DebugHandler.csproj" />
     <ProjectReference Include="..\ExtPlaneNet\ExtPlaneNet.csproj" />
     <ProjectReference Include="..\Model\Model.csproj" />

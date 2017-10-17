@@ -11,7 +11,10 @@ namespace Cs
         public static SettingsModel.Models.SimulatorSettings Simulator { get; set; }
         public static SettingsModel.Models.FoldersSettings Folders { get; set; }
         public static SettingsModel.Models.MariaDbSettings Database { get; set; }
+        public static Model.Settings.DbVersionModel DatabaseVersionInformation { get; set; }
 
         public static Model.Settings.GlobalSettingsFileServerInfoModel Server { get; set; }
+
+
     }
 }

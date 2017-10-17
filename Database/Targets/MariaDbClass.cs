@@ -5,6 +5,13 @@ using System.Text;
 using System.Threading;
 
 
+/*
+ * TODO
+ * 
+ * https://dev.mysql.com/doc/connector-net/en/connector-net-connection-options.html
+ * 
+ * */
+
 namespace Cs.Communication.Database.Targets
 {
     public class MariaDbClass
@@ -60,8 +67,8 @@ namespace Cs.Communication.Database.Targets
 
         private void Open()
         {
-
-            var connStr = string.Format("server={0};user={1};database={2};port={3};password={4};", Settings.Database.Host, Settings.Database.User, Settings.Database.DbName, Settings.Database.Port, Settings.Database.UserPw);
+            
+            var connStr = string.Format("sslmode=none;server={0};user={1};database={2};port={3};password={4};", Settings.Database.Host, Settings.Database.User, Settings.Database.DbName, Settings.Database.Port, Settings.Database.UserPw);
             this._conn = new MySql.Data.MySqlClient.MySqlConnection(connStr);
             this._conn.Open();
 
