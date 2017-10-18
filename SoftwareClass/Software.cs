@@ -25,7 +25,12 @@ namespace Cs.Software
 
 
             this.DaServerData = new Cs.Communication.Database.DataAccess.DaServerData();
+            Settings.Data = new Model.Data.DataModel()
+            {
+                Clients = new Dictionary<string, Model.Data.ClientInformationModel>()
+            };
 
+            
             this.Debug.Info("Class starting");
 
 
@@ -60,26 +65,52 @@ namespace Cs.Software
             ZDebug = "sdfdsf";
 
 
-            var dsfdsf = Settings.Server;
+            //x var dsfdsf = Settings.Server;
 
-
+            #region Start socket server
+            Debug.Info("Server is starting");
             this.Server = new Handlers.SocketServerHandler();
             this.Server.Debug = this.Debug;
             this.Server.Start();
+            Debug.Info("Server is started");
+            #endregion
 
 
+            // TODO Move this to database settings.
+            #region Sett Connection to simulator Manuel. 
+            Settings.Simulator = new SettingsModel.Models.SimulatorSettings()
+            {
+                Connected = false,
+                ConnectedShodBe = true,
+                Host = "172.16.100.88",
+                Port = 51000,
+                SimType = SettingsModel.Models.SimTypeEnum.xplane11Ext
+            };
+
+            #endregion
+
             ZDebug = "sdfdsf";
             ZDebug = "sdfdsf";
             ZDebug = "sdfdsf";
             ZDebug = "sdfdsf";
+
 
             //Settings.Simulator.SimType = SettingsModel.Handlers.SimTypeEnum.xplane11Ext;
             //Settings.Simulator.Host = "172.16.100.88";
             //Settings.Simulator.Port = 51000;
 
+            var dsfdsf = Settings.Simulator;
+
+
             while (true)
             {
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(5000);
+                Debug.Info($"Connected clients: {Settings.Data.Clients.Count}");
+                foreach(var aa in Settings.Data.Clients)
+                {
+                    Debug.Info($"Id: {aa.Value.ClientId} - last con: {aa.Value.DateTimeLast.ToString()}");
+                }
+                
 
             }
 

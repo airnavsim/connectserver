@@ -24,10 +24,12 @@ namespace Cs.Software.Handlers
         public void Start()
         {
             Debug.Info("Socket server starting");
-            
+
+            Debug.Info($"Port: {Settings.Server.SrvPort}");
 
             Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            listenSocket.Bind(new IPEndPoint(IPAddress.Loopback, 4444));
+            /// listenSocket.Bind(new IPEndPoint(IPAddress.Loopback, 4444));
+            listenSocket.Bind(new IPEndPoint(IPAddress.Any, Convert.ToInt16(Settings.Server.SrvPort)));
             listenSocket.Listen(100);
             SocketAsyncEventArgs e = new SocketAsyncEventArgs();
             e.Completed += AcceptCallback;
@@ -117,53 +119,123 @@ namespace Cs.Software.Handlers
             soc.Send(Encoding.ASCII.GetBytes(TmpRespondMessage));
 
             string Cmd = "";
-            while (true)
-            {
-                soc.Send(Encoding.ASCII.GetBytes("Authenticate\n"));
-                Cmd = ReadData(soc).ToLower().Trim();
-                Console.WriteLine(Cmd);
-            }
-            Console.WriteLine("ReadDataLoop starting");
-            Boolean testvalie = false;
+            string ClientId = "";
+            string ClientPw = "";
+            bool ClientAuthenticated = false;
             while (true)
             {
                 if (!soc.Connected)
-                    break;
-
-                string xxx = "";
-                xxx = ReadData(soc).ToLower().Trim();
-                if (xxx == "quit")
                 {
-                    // Settings.Data.Clients.Remove(guid);
-
-                    //TODO  Remove clientId from all sensors that it is monitoring
+                    ClientAuthenticated = false;
                     break;
                 }
-                else if (xxx == "hej")
+                    
+                soc.Send(Encoding.ASCII.GetBytes("Authenticate\n"));
+                Cmd = ReadData(soc).ToLower().Trim();
+                if (Cmd.Contains(":"))
                 {
-                    if (testvalie)
-                        testvalie = false;
-                    else
-                        testvalie = true;
-
-                    soc.Send(Encoding.ASCII.GetBytes($"Value: change"));
+                    string[] input = Cmd.Split(':');
+                    ClientId = input[0];
+                    ClientPw = input[1];
+                    if (Settings.Server.SrvPw.ToLower() == ClientPw)
+                    {
+                        ClientAuthenticated = true;
+                        break;
+                    }
+                        
                 }
-                else if (xxx == "aa")
-                {
-                    soc.Send(Encoding.ASCII.GetBytes($"Value: {testvalie.ToString()}"));
-                }
-                else if (xxx.StartsWith("add:"))
-                {
-                    //  Add client to sensor Id
-                    // Settings.Data.Sensors["sim/time/total_flight_time_sec"].ClientUpdates.Add(guid);
-                    // var data = "value:" + "sim/time/total_flight_time_sec" + ":" + Settings.Data.Sensors["sim/time/total_flight_time_sec"]?.Value + "\r\n";
-                    // soc.Send(Encoding.ASCII.GetBytes(data));
-
-                }
-
-
-                // Console.WriteLine("{0}:{1}", client.Guid, xxx);
+                if ((Cmd == "logoff") || (Cmd == "end") || (Cmd == "quit"))
+                    break;
+                Console.WriteLine(Cmd);
             }
+
+            if (ClientAuthenticated)
+            {
+                
+                var ss = System.Guid.NewGuid().ToString();
+                while (true)
+                {
+                    if (!Settings.Data.Clients.ContainsKey(ss))
+                        break;
+
+                    ss = System.Guid.NewGuid().ToString();
+                }
+
+                var client = new Model.Data.ClientInformationModel()
+                {
+                    Guid = ss,
+                    Authenticated = false,
+                    Soc = soc,
+                    ClientId = ClientId,
+                    DateTimeConnected = DateTime.UtcNow,
+                    DateTimeLast = DateTime.UtcNow,
+                    IpAdress = aa.Address.ToString(),
+                    IpPort = aa.Port.ToString(),
+                    ClientName = "nodata"
+                };
+
+                Settings.Data.Clients.Add(ss, client);
+
+                client.Soc.Send(Encoding.ASCII.GetBytes("Authenticated\n"));
+
+                Debug.Info($"Client id:{client.ClientId} | Name: {client.ClientName} is Authenticated");
+
+                Boolean testvalie = false;
+                while (true)
+                {
+                    if (!soc.Connected)
+                        break;
+
+                    string xxx = "";
+                    xxx = ReadData(soc).ToLower().Trim();
+                    if (string.IsNullOrEmpty(xxx))
+                        continue;
+
+                    client.DateTimeLast = DateTime.UtcNow;
+
+                    if (xxx == "quit")
+                    {
+                        // Settings.Data.Clients.Remove(guid);
+
+                        //TODO  Remove clientId from all sensors that it is monitoring
+                        break;
+                    }
+                    else if (xxx == "hej")
+                    {
+                        if (testvalie)
+                            testvalie = false;
+                        else
+                            testvalie = true;
+
+                        soc.Send(Encoding.ASCII.GetBytes($"Value: change"));
+                    }
+                    else if (xxx == "aa")
+                    {
+                        soc.Send(Encoding.ASCII.GetBytes($"Value: {testvalie.ToString()}"));
+                    }
+                    else if (xxx.StartsWith("add:"))
+                    {
+                        //  Add client to sensor Id
+                        // Settings.Data.Sensors["sim/time/total_flight_time_sec"].ClientUpdates.Add(guid);
+                        // var data = "value:" + "sim/time/total_flight_time_sec" + ":" + Settings.Data.Sensors["sim/time/total_flight_time_sec"]?.Value + "\r\n";
+                        // soc.Send(Encoding.ASCII.GetBytes(data));
+
+                    }
+
+
+                    // Console.WriteLine("{0}:{1}", client.Guid, xxx);
+                }
+
+            }
+
+            //if (ClientLogoff)
+            //{
+            //    soc.Dispose();
+            //    return;
+            //}
+                
+
+            
 
             soc.Dispose();
 

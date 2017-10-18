@@ -8,14 +8,15 @@ namespace Cs.SettingsModel.Models
     {
         public SimTypeEnum SimType { get; set; }
         
-
+        public bool Connected { get; set; }
+        public bool ConnectedShodBe { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
         public string UserName { get; set; }
         public string UserPass { get; set; }
 
-        public DateTime ConnectedTime { get; set; }
-        public DateTime LastMessage { get; set; }
+        public DateTime DateTimeConnected { get; set; }
+        public DateTime DateTimeLastMessage { get; set; }
     }
     public enum SimTypeEnum { nosim = 0, xplane11Ext = 1}
 }
