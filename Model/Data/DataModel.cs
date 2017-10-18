@@ -8,7 +8,9 @@ namespace Cs.Model.Data
 {
     public class DataModel
     {
-       public Dictionary<string, ClientInformationModel> Clients { get; set; }
+        public Dictionary<string, ClientInformationModel> Clients { get; set; }
+        public Dictionary<ulong, SensorModel> Sensors { get; set; }
+
 
         public DataModel()
         {

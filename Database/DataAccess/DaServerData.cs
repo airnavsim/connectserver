@@ -63,6 +63,32 @@ namespace Cs.Communication.Database.DataAccess
         }
         #endregion
 
+        #region TblSensors
+        public List<Model.Database.TblSensors> TblSensors_GetAll()
+        {
+            this.DbMaria.QuerySql = $"select * from tblsensors;";
+
+            this.DbMaria.ExecuteQuerySelect();
+
+            if (!this.DbMaria.QueryWasDone)
+            {
+                //  Error when running query
+                this.ErrorEvent();
+                return null;
+            }
+
+            this.QueryWasDone = true;
+            if (this.DbMaria.ReturnDt.Rows.Count == 0)
+            {
+                //  No row exist
+                return null;
+            }
+
+            var hh = new List<Model.Database.TblSensors>();
+            hh = this.ConvertData.ConvertDataTable<Model.Database.TblSensors>(this.DbMaria.ReturnDt);
+            return hh;
+        }
+        #endregion
         private void ErrorEvent()
         {
             this.ErrorEvent("daServerData error");

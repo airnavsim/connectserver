@@ -13,9 +13,12 @@ namespace Cs.Software.Handlers
 {
     public class SocketServerHandler
     {
+        private string ZDebug { get; set; }
+
         public static ManualResetEvent allDone = new ManualResetEvent(false);
         public Cs.Debug Debug { get; set; }
 
+        public SimConnector.ISimInterface Simulator { get; set; }
         public SocketServerHandler()
         {
 
@@ -52,48 +55,17 @@ namespace Cs.Software.Handlers
                 {
                     Socket newSocket = e.AcceptSocket;
 
-                    var aa = newSocket.RemoteEndPoint as IPEndPoint;
+                    // var aa = newSocket.RemoteEndPoint as IPEndPoint;
                     //+ TODO 
                     //  Check ip adress so that it can connect.
 
-                    // var ss = System.Guid.NewGuid().ToString();
-
-                    //while (true)
-                    //{
-                    //    if (!Settings.Data.Clients.ContainsKey(ss))
-                    //        break;
-                        
-                    //    ss = System.Guid.NewGuid().ToString();
-                    //}
-
-                    //if (Settings.Data.Clients == null)
-                    //{
-                    //    var dsfdsf = "sdfsdf";
-                    //}
-                    
-                    //Settings.Data.Clients.Add(ss, new Model.Data.ClientInformationModel()
-                    //{
-                    //    Guid = ss,
-                    //    Authenticated = false,
-                    //    Client = newSocket,
-                    //    ClientId = "nodata",
-                    //    DateTimeConnected = DateTime.UtcNow,
-                    //    DateTimeLast = DateTime.UtcNow,
-                    //    IpAdress = aa.Address.ToString(),
-                    //    IpPort = aa.Port.ToString()
-                    //});
-
-                    // string TmpRespondMessage = $"ConnectServer {Settings.VersionInformation.AppVersionString}\nHello {aa.Address.ToString()}\nAuthenticate\n";
-                    newSocket.Send(Encoding.ASCII.GetBytes($"ConnectServer {Settings.VersionInformation.AppVersionString}\n"));
+                    // Thread.Sleep(2000);
+                    newSocket.Send(Encoding.ASCII.GetBytes($"ConnectServer {Settings.VersionInformation.AppVersionString}\r\n"));
 
                     
 
 
-                    //  Add client to settingd DATA
-                    // Settings.Data.Clients.Add(ss, new Settings.Classes.Server.ClientConnectedClass() { Client = newSocket });
                     Task.Run(() => ReadDataLoop(newSocket));
-                    // Task.Run(() => ReadDataLoop(newSocket, ss));
-                    // Task.Run(() => ReadDataLoop(Settings.Data.Clients[ss]));
 
                 }
                 catch
@@ -115,7 +87,7 @@ namespace Cs.Software.Handlers
         private void ReadDataLoop(Socket soc)
         {
             var aa = soc.RemoteEndPoint as IPEndPoint;
-            string TmpRespondMessage = $"Hello {aa.Address.ToString()}\n";
+            string TmpRespondMessage = $"Hello {aa.Address.ToString()}\r\n";
             soc.Send(Encoding.ASCII.GetBytes(TmpRespondMessage));
 
             string Cmd = "";
@@ -130,8 +102,10 @@ namespace Cs.Software.Handlers
                     break;
                 }
                     
-                soc.Send(Encoding.ASCII.GetBytes("Authenticate\n"));
+                soc.Send(Encoding.ASCII.GetBytes("Authenticate\r\n"));
                 Cmd = ReadData(soc).ToLower().Trim();
+                
+
                 if (Cmd.Contains(":"))
                 {
                     string[] input = Cmd.Split(':');
@@ -144,6 +118,12 @@ namespace Cs.Software.Handlers
                     }
                         
                 }
+
+                //+ Auto allow all now - debug only
+                //ClientAuthenticated = true;
+                //break;
+
+
                 if ((Cmd == "logoff") || (Cmd == "end") || (Cmd == "quit"))
                     break;
                 Console.WriteLine(Cmd);
@@ -176,7 +156,9 @@ namespace Cs.Software.Handlers
 
                 Settings.Data.Clients.Add(ss, client);
 
-                client.Soc.Send(Encoding.ASCII.GetBytes("Authenticated\n"));
+                client.Soc.Send(Encoding.ASCII.GetBytes("Authenticated\r\n"));
+                //  Send status to client about system
+                this.SendStatus(client.Soc);
 
                 Debug.Info($"Client id:{client.ClientId} | Name: {client.ClientName} is Authenticated");
 
@@ -215,7 +197,9 @@ namespace Cs.Software.Handlers
                     }
                     else if (xxx.StartsWith("add:"))
                     {
-                        //  Add client to sensor Id
+                        //  Add Connected client to sensor update.
+                        client.Soc.Send(Encoding.ASCII.GetBytes(this.SensorAdd(xxx, client.Guid)));
+                        
                         // Settings.Data.Sensors["sim/time/total_flight_time_sec"].ClientUpdates.Add(guid);
                         // var data = "value:" + "sim/time/total_flight_time_sec" + ":" + Settings.Data.Sensors["sim/time/total_flight_time_sec"]?.Value + "\r\n";
                         // soc.Send(Encoding.ASCII.GetBytes(data));
@@ -242,7 +226,27 @@ namespace Cs.Software.Handlers
             Console.WriteLine("ReadDataLoop Ending");
 
         }
+        private string SensorAdd(string command, string ClientId)
+        {
+            //add:<sensorId>
+            string[] aa = command.Split(':');
+            if (aa.Length == 2)
+            {
+                ZDebug = "dsfdsf";
+                ulong abb = Convert.ToUInt64(aa[1]);
+                ZDebug = "dsfdsf";
+                return this.Simulator.Subscribe(abb, ClientId);
+            }
 
+            ZDebug = "dsfdsf";
+            return "hejhejochhej\r\n";
+            
+        }
+
+        private void SendStatus(Socket client)
+        {
+            client.Send(Encoding.ASCII.GetBytes($"SimulatorConnected: {Settings.Simulator.Connected.ToString()}\r\n"));
+        }
         private static string ReadData(Socket client)
         {
             string retVal;
@@ -265,12 +269,22 @@ namespace Cs.Software.Handlers
             //do
             while (true)
             {
-                numberOfBytesRead = client.Receive(myReadBuffer, 0);
-                // numberOfBytesRead = client.Receive(myReadBuffer, client.ReceiveBufferSize, SocketFlags.None); // , 0); // , myReadBuffer.Length);
+                try
+                {
+                    numberOfBytesRead = client.Receive(myReadBuffer, 0);
+                    // numberOfBytesRead = client.Receive(myReadBuffer, client.ReceiveBufferSize, SocketFlags.None); // , 0); // , myReadBuffer.Length);
 
-                myCompleteMessage.AppendFormat("{0}", Encoding.ASCII.GetString(myReadBuffer, 0, numberOfBytesRead));
+                    myCompleteMessage.AppendFormat("{0}", Encoding.ASCII.GetString(myReadBuffer, 0, numberOfBytesRead));
+
+                    
+                }
+                catch
+                {
+                    break;
+                }
 
                 if (myCompleteMessage.ToString().EndsWith("\r\n")) break;
+
             }
             // "\r\n\r\ndfsdfsdfsd\r\ndsfsdfsdfksdljfsdf\r\ndsfdsfsdf\r\n<end>"
             // while (client.ReceiveBufferSize > numberOfBytesRead);

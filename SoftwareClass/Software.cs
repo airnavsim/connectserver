@@ -67,13 +67,7 @@ namespace Cs.Software
 
             //x var dsfdsf = Settings.Server;
 
-            #region Start socket server
-            Debug.Info("Server is starting");
-            this.Server = new Handlers.SocketServerHandler();
-            this.Server.Debug = this.Debug;
-            this.Server.Start();
-            Debug.Info("Server is started");
-            #endregion
+           
 
 
             // TODO Move this to database settings.
@@ -88,6 +82,25 @@ namespace Cs.Software
             };
 
             #endregion
+
+            #region Load sensors data
+            this.SensorDataLoad();
+            #endregion
+
+            this.SimulatorInit();
+
+            #region Start socket server
+            Debug.Info("Server is starting");
+            this.Server = new Handlers.SocketServerHandler();
+            this.Server.Debug = this.Debug;
+            this.Server.Simulator = this.Simulator;
+            this.Server.Start();
+            Debug.Info("Server is started");
+            #endregion
+
+
+            this.ConnectToSimulator();
+
 
             ZDebug = "sdfdsf";
             ZDebug = "sdfdsf";
@@ -129,7 +142,7 @@ namespace Cs.Software
             
         }
 
-        private void ConnectToSimulator()
+        private void SimulatorInit()
         {
             if (Settings.Simulator.SimType == SettingsModel.Models.SimTypeEnum.nosim)
             {
@@ -139,9 +152,14 @@ namespace Cs.Software
             {
                 this.Simulator = new SimConnector.XplaneExt();
             }
+        }
+        private void ConnectToSimulator()
+        {
+           
                 
             if (this.Simulator != null)
             {
+                this.Simulator.Debug = this.Debug;
                 this.Simulator.Connect();
                 
             }
@@ -182,5 +200,110 @@ namespace Cs.Software
 
             return true;
         }
+
+        private void SensorDataLoad()
+        {
+            Settings.Data.Sensors = new Dictionary<ulong, Model.Data.SensorModel>();
+
+            this.SensorReloadFromDatabase();
+
+
+            //Settings.Data.Sensors.Add(1, new Model.Data.SensorModel()
+            //{
+            //    CollectingClientsGuid = new List<string>(),
+            //    CollectingEnable = false,
+            //    Id = 1,
+            //    Name = "latitude",
+            //    SimCommand = "sim/flightmodel/position/latitude",
+            //    Subscribeaccuracy = 0.00001f,
+            //    _ValueExist = false
+            //});
+            //Settings.Data.Sensors.Add(2, new Model.Data.SensorModel()
+            //{
+            //    CollectingClientsGuid = new List<string>(),
+            //    CollectingEnable = false,
+            //    Id = 2,
+            //    Name = "longitude",
+            //    SimCommand = "sim/flightmodel/position/longitude",
+            //    Subscribeaccuracy = 0.00001f,
+            //    _ValueExist = false
+            //});
+            //Settings.Data.Sensors.Add(3, new Model.Data.SensorModel()
+            //{
+            //    CollectingClientsGuid = new List<string>(),
+            //    CollectingEnable = false,
+            //    Id = 3,
+            //    Name = "wind",
+            //    SimCommand = "sim/weather/wind_speed_kt",
+            //    Subscribeaccuracy = 0.01f,
+            //    _ValueExist = false
+            //});
+            //Settings.Data.Sensors.Add(4, new Model.Data.SensorModel()
+            //{
+            //    CollectingClientsGuid = new List<string>(),
+            //    CollectingEnable = false,
+            //    Id = 4,
+            //    Name = "wind",
+            //    SimCommand = "sim/weather/wind_speed_kt[2]",
+            //    Subscribeaccuracy = 0.01f,
+            //    _ValueExist = false
+            //});
+        }
+
+        private void SensorReloadFromDatabase()
+        {
+            //  Get all sensors rows from database
+            var TmpSensordb = DaServerData.TblSensors_GetAll();
+
+            foreach(var aa in TmpSensordb)
+            {
+                if (Settings.Data.Sensors.ContainsKey(aa.Id))
+                {
+                    //  sensor already loaded. 
+                    //+ TODO  check if data need change.
+                }
+                else
+                {
+                    var TmpModel = new Model.Data.SensorModel()
+                    {
+                        Id = aa.Id,
+                        Group = aa.Group,
+                        Name = aa.Name,
+                        SimCommand = aa.Xplane11Ext,
+                        CollectingClientsGuid = new List<string>(),
+                        _ValueExist = false,
+                        CollectingEnable = false
+                    };
+
+                    TmpModel.Subscribeaccuracy = aa.Accuracy;
+
+                    // var dsfdsf = aa.Accuracy;
+                    // ZDebug = "sdfdsf";
+
+
+
+                    Settings.Data.Sensors.Add(aa.Id, TmpModel);
+                }
+            }
+
+        }
+
+
+        /*
+         *             #region Position
+            Settings.Data.Sensors.Add("sim/flightmodel/position/latitude", new Settings.Classes.Server.DataSensorClass("sim/flightmodel/position/latitude", true) { Subscribeaccuracy = 0.1f });
+            Settings.Data.Sensors.Add("sim/flightmodel/position/longitude", new Settings.Classes.Server.DataSensorClass("sim/flightmodel/position/longitude", true) { Subscribeaccuracy = 0.1f });
+            #endregion 
+
+            //  Speed information
+
+            // Air speed indicated - this takes into account air density and wind direction
+            Settings.Data.Sensors.Add("sim/flightmodel/position/indicated_airspeed", new Settings.Classes.Server.DataSensorClass("sim/flightmodel/position/indicated_airspeed", true) { Subscribeaccuracy = 1.0f });
+            Settings.Data.Sensors.Add("sim/flightmodel/position/indicated_airspeed2", new Settings.Classes.Server.DataSensorClass("sim/flightmodel/position/indicated_airspeed2", true) { Subscribeaccuracy = 1.0f });
+            //  Air speed true - this does not take into account air density at altitude!
+            Settings.Data.Sensors.Add("sim/flightmodel/position/true_airspeed", new Settings.Classes.Server.DataSensorClass("sim/flightmodel/position/true_airspeed", true) { Subscribeaccuracy = 1.0f });
+
+         * 
+         * */
     }
 }
