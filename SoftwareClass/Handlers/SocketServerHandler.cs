@@ -230,7 +230,7 @@ namespace Cs.Software.Handlers
             
         }
 
-        private string SensorAdd(string command, string ClientId)
+        private string SensorAdd(string command, string ClientGuId)
         {
             //add:<sensorId>
             string[] aa = command.Split(':');
@@ -239,7 +239,7 @@ namespace Cs.Software.Handlers
                 ZDebug = "dsfdsf";
                 ulong abb = Convert.ToUInt64(aa[1]);
                 ZDebug = "dsfdsf";
-                return this.Simulator.Subscribe(abb, ClientId);
+                return this.Simulator.Subscribe(abb, ClientGuId);
             }
 
             ZDebug = "dsfdsf";

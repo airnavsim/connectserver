@@ -8,6 +8,7 @@ namespace Cs.Software.SimConnector
     {
         Cs.Debug Debug { get; set; }
         void Connect();
+        Boolean IsConnected();
 
         string Subscribe(ulong sensorId, string clientGuid);
 

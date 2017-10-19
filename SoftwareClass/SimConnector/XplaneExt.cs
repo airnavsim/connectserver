@@ -16,6 +16,7 @@ namespace Cs.Software.SimConnector
         private ExtPlaneNetCore.ExtPlaneInterface ExtPlane { get; set; }
         public void Connect()
         {
+            Settings.Simulator.Connected = false;
 
             if (this.ExtPlane == null)
                 this.ExtPlane = new ExtPlaneNetCore.ExtPlaneInterface();
@@ -31,8 +32,9 @@ namespace Cs.Software.SimConnector
                 Settings.Simulator.Connected = true;
                 Settings.Simulator.DateTimeConnected = DateTime.UtcNow;
             }
+            Debug.Info("Sim not connected");
             
-
+            
 
         }
 
@@ -47,6 +49,7 @@ namespace Cs.Software.SimConnector
             var aa = this.GetSensorInfo(sensorId);
             if (aa == null)
             {
+                // TODO  Load from sensor id from database
                 //  dont exist
                 return "supdate:{sensorId}:dontexist\r\n";
             }
@@ -80,10 +83,14 @@ namespace Cs.Software.SimConnector
                 //{
                 //    ExtPlaneSubscribeReturnData(dataRef.Name, dataRef.Value);
                 //});
-                
+                return $"supdate:{sensorId}:add\r\n";
             }
+            if (aa._ValueExist)
+                return $"supdate:{sensorId}:add\r\nsvalue:{sensorId}:{aa._Value}\r\n";
+
 
             return $"supdate:{sensorId}:add\r\n";
+
 
 
             // return null;
@@ -99,7 +106,10 @@ namespace Cs.Software.SimConnector
                 aa._ValueLastUpdated = DateTime.UtcNow;
                 aa._ValueExist = true;
 
-                foreach(var clUpdate in aa.CollectingClientsGuid)
+                
+                List<string> newList = new List<string>(aa.CollectingClientsGuid);
+                // foreach (var clUpdate in aa.CollectingClientsGuid)
+                foreach (var clUpdate in newList)
                 {
                     try
                     {
@@ -131,6 +141,15 @@ namespace Cs.Software.SimConnector
                 return Settings.Data.Sensors[sensorId];
             }
             return null;
+        }
+
+        public bool IsConnected()
+        {
+            if (this.ExtPlane != null)
+                return this.ExtPlane.IsConnected();
+
+            return false;
+            
         }
     }
 }
