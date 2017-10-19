@@ -48,7 +48,7 @@ namespace Cs.Software.SimConnector
             if (aa == null)
             {
                 //  dont exist
-                return "error:sensordontexist";
+                return "supdate:{sensorId}:dontexist\r\n";
             }
 
             if (!aa.CollectingClientsGuid.Contains(clientGuid))
@@ -62,22 +62,31 @@ namespace Cs.Software.SimConnector
                 //  Collection of this sensor is not enable. enable it.
 
                 aa.CollectingEnable = true;
-                
-                this.ExtPlane.Subscribe<string>(aa.SimCommand, aa.Subscribeaccuracy, (dataRef) =>
+
+                try
                 {
-                    SubscribeReturn(sensorId, dataRef.Name, dataRef.Value);
-                });
+                    this.ExtPlane.Subscribe<string>(aa.SimCommand, aa.Subscribeaccuracy, (dataRef) =>
+                    {
+                        SubscribeReturn(sensorId, dataRef.Name, dataRef.Value);
+                    });
+                }
+                catch
+                {
+                    var dsfdsf = "fsdf";
+                }
+
 
                 //this.ExtPlane.Subscribe<string>(entry.Key, entry.Value.Subscribeaccuracy, (dataRef) =>
                 //{
                 //    ExtPlaneSubscribeReturnData(dataRef.Name, dataRef.Value);
                 //});
-                return "added";
+                
             }
 
+            return $"supdate:{sensorId}:add\r\n";
 
 
-            return null;
+            // return null;
         }
         private void SubscribeReturn(ulong sensorId, string refName, string refValue)
         {
@@ -96,7 +105,7 @@ namespace Cs.Software.SimConnector
                     {
                         if (Settings.Data.Clients[clUpdate].Soc.Connected)
                         {
-                            Settings.Data.Clients[clUpdate].Soc.Send(Encoding.ASCII.GetBytes($"s:{sensorId}:{refValue}\r\n"));
+                            Settings.Data.Clients[clUpdate].Soc.Send(Encoding.ASCII.GetBytes($"svalue:{sensorId}:{refValue}\r\n"));
                             // client.Send(Encoding.ASCII.GetBytes($"SimulatorConnected: {Settings.Simulator.Connected.ToString()}\n"));
                         }
                     }

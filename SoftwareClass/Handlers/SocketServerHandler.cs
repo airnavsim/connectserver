@@ -88,6 +88,7 @@ namespace Cs.Software.Handlers
         {
             var aa = soc.RemoteEndPoint as IPEndPoint;
             string TmpRespondMessage = $"Hello {aa.Address.ToString()}\r\n";
+            // TODO fix send void 
             soc.Send(Encoding.ASCII.GetBytes(TmpRespondMessage));
 
             string Cmd = "";
@@ -173,59 +174,62 @@ namespace Cs.Software.Handlers
                     if (string.IsNullOrEmpty(xxx))
                         continue;
 
+
+                    string[] stringSeparators = new string[] { "\r\n" };
+                    string[] MesIncom = xxx.Split(stringSeparators, StringSplitOptions.None);
+
+                    // string[] MesIncom = Cmd.Split("\r\n");
+                    foreach (string mes in MesIncom)
+                    {
+                        if (string.IsNullOrEmpty(mes))
+                            continue;
+
+                        if (mes == "quit")
+                        {
+                            // Settings.Data.Clients.Remove(guid);
+
+                            //TODO  Remove clientId from all sensors that it is monitoring
+                            break;
+                        }
+                        else if (mes.StartsWith("add:"))
+                        {
+                            //  Add Connected client to sensor update.
+                            string tmpData = this.SensorAdd(mes, client.Guid);
+
+                            if (!string.IsNullOrEmpty(tmpData))
+                                client.Soc.Send(Encoding.ASCII.GetBytes(tmpData));
+
+
+                        }
+                        else
+                        {
+                            ZDebug = "sdfsdf";
+                        }
+                    }
+
+
+
+
                     client.DateTimeLast = DateTime.UtcNow;
 
-                    if (xxx == "quit")
-                    {
-                        // Settings.Data.Clients.Remove(guid);
-
-                        //TODO  Remove clientId from all sensors that it is monitoring
-                        break;
-                    }
-                    else if (xxx == "hej")
-                    {
-                        if (testvalie)
-                            testvalie = false;
-                        else
-                            testvalie = true;
-
-                        soc.Send(Encoding.ASCII.GetBytes($"Value: change"));
-                    }
-                    else if (xxx == "aa")
-                    {
-                        soc.Send(Encoding.ASCII.GetBytes($"Value: {testvalie.ToString()}"));
-                    }
-                    else if (xxx.StartsWith("add:"))
-                    {
-                        //  Add Connected client to sensor update.
-                        client.Soc.Send(Encoding.ASCII.GetBytes(this.SensorAdd(xxx, client.Guid)));
-                        
-                        // Settings.Data.Sensors["sim/time/total_flight_time_sec"].ClientUpdates.Add(guid);
-                        // var data = "value:" + "sim/time/total_flight_time_sec" + ":" + Settings.Data.Sensors["sim/time/total_flight_time_sec"]?.Value + "\r\n";
-                        // soc.Send(Encoding.ASCII.GetBytes(data));
-
-                    }
+                    
 
 
-                    // Console.WriteLine("{0}:{1}", client.Guid, xxx);
+
                 }
 
             }
-
-            //if (ClientLogoff)
-            //{
-            //    soc.Dispose();
-            //    return;
-            //}
-                
-
-            
 
             soc.Dispose();
 
             Console.WriteLine("ReadDataLoop Ending");
 
         }
+        private void IncommingMessage(string clientGuId, String message)
+        {
+            
+        }
+
         private string SensorAdd(string command, string ClientId)
         {
             //add:<sensorId>
@@ -239,44 +243,31 @@ namespace Cs.Software.Handlers
             }
 
             ZDebug = "dsfdsf";
-            return "hejhejochhej\r\n";
+            return "error:\r\n";
             
         }
 
         private void SendStatus(Socket client)
         {
-            client.Send(Encoding.ASCII.GetBytes($"SimulatorConnected: {Settings.Simulator.Connected.ToString()}\r\n"));
+            client.Send(Encoding.ASCII.GetBytes($"sim:connected:{Settings.Simulator.Connected.ToString().ToLower()}\r\n"));
+               
         }
         private static string ReadData(Socket client)
         {
-            string retVal;
+            // string retVal;
             byte[] data = new byte[1024];
-
-            // NetworkStream stream = client.re.Receive(); // .GetStream();
-
 
             byte[] myReadBuffer = new byte[1024];
             StringBuilder myCompleteMessage = new StringBuilder();
             int numberOfBytesRead = 0;
 
-            // byte[] buffer = new byte[1024];
-            //    newSocket.Receive(buffer, 0); // , 2); // , newSocket.ReceiveBufferSize);
 
-            //    message = Encoding.ASCII.GetString(buffer);
-            //    Console.WriteLine(message);
-
-
-            //do
             while (true)
             {
                 try
                 {
                     numberOfBytesRead = client.Receive(myReadBuffer, 0);
-                    // numberOfBytesRead = client.Receive(myReadBuffer, client.ReceiveBufferSize, SocketFlags.None); // , 0); // , myReadBuffer.Length);
-
                     myCompleteMessage.AppendFormat("{0}", Encoding.ASCII.GetString(myReadBuffer, 0, numberOfBytesRead));
-
-                    
                 }
                 catch
                 {
@@ -286,18 +277,12 @@ namespace Cs.Software.Handlers
                 if (myCompleteMessage.ToString().EndsWith("\r\n")) break;
 
             }
-            // "\r\n\r\ndfsdfsdfsd\r\ndsfsdfsdfksdljfsdf\r\ndsfdsfsdf\r\n<end>"
-            // while (client.ReceiveBufferSize > numberOfBytesRead);
-            //while (stream.DataAvailable);
-
-            // client.ReceiveBufferSize
 
 
+            // retVal = myCompleteMessage.ToString();
+            // retVal = retVal.Replace("\r\n", "");
 
-            retVal = myCompleteMessage.ToString();
-            retVal = retVal.Replace("\r\n", "");
-
-            return retVal;
+            return myCompleteMessage.ToString().ToLower().Trim();
         }
 
         public void SendValuesToConnectedClients(string sensorName)

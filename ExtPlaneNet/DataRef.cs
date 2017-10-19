@@ -48,7 +48,8 @@ namespace ExtPlaneNetCore
 
 		public static object ParseValue(string rawValue, Type type)
 		{
-			if (string.IsNullOrWhiteSpace(rawValue))
+            // rawValue = "[0.85301,0.85301,0,0,0,0,0,0]"
+            if (string.IsNullOrWhiteSpace(rawValue))
 				throw new ArgumentNullException("rawValue");
 
 			if (type == null)
@@ -58,14 +59,20 @@ namespace ExtPlaneNetCore
 
 			if (type.IsArray)
 			{
-				string[] elements = rawValue.Replace("[", string.Empty).Replace("]", string.Empty).Split(',');
-				Array array = Array.CreateInstance(type.GetElementType(), elements.Length);
+                string[] elements = rawValue.Replace("[", string.Empty).Replace("]", string.Empty).Split(',');
 
-				for (int i = 0; i < array.Length; i++)
-					array.SetValue(Convert.ChangeType(elements[i], type.GetElementType()), i);
+                // value = new string[elements.Length];
+                value = string.Join("|", elements);
 
-				value = array;
-			}
+                //+ Old kod. does not work.. 
+                //string[] elements = rawValue.Replace("[", string.Empty).Replace("]", string.Empty).Split(',');
+                //Array array = Array.CreateInstance(type.GetElementType(), elements.Length);
+
+                //for (int i = 0; i < array.Length; i++)
+                //	array.SetValue(Convert.ChangeType(elements[i], type.GetElementType()), i);
+
+                //value = array;
+            }
             
 			else
             {
