@@ -32,11 +32,34 @@ namespace Cs.Software.SimConnector
                 Settings.Simulator.Connected = true;
                 Settings.Simulator.DateTimeConnected = DateTime.UtcNow;
             }
-            Debug.Info("Sim not connected");
+            else
+                Debug.Info("Sim not connected");
             
             
 
         }
+
+        public void Disconnect()
+        {
+            if (this.ExtPlane != null)
+            {
+                if (this.ExtPlane.IsConnected())
+                {
+                    this.ExtPlane.Disconnect();
+                    Debug.Info("Simulator disconnected");
+                }
+            }
+        }
+
+        public bool IsConnected()
+        {
+            if (this.ExtPlane != null)
+                return this.ExtPlane.IsConnected();
+
+            return false;
+
+        }
+
 
         public string Subscribe(ulong sensorId, string clientGuid)
         {
@@ -143,13 +166,12 @@ namespace Cs.Software.SimConnector
             return null;
         }
 
-        public bool IsConnected()
-        {
-            if (this.ExtPlane != null)
-                return this.ExtPlane.IsConnected();
 
-            return false;
-            
+
+
+        public string GetValue(ulong sensorId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

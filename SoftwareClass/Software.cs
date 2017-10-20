@@ -101,42 +101,25 @@ namespace Cs.Software
 
             this.ConnectToSimulator();
 
-
-            ZDebug = "sdfdsf";
-            ZDebug = "sdfdsf";
-            ZDebug = "sdfdsf";
-            ZDebug = "sdfdsf";
-
-
-            //Settings.Simulator.SimType = SettingsModel.Handlers.SimTypeEnum.xplane11Ext;
-            //Settings.Simulator.Host = "172.16.100.88";
-            //Settings.Simulator.Port = 51000;
-
-            var dsfdsf = Settings.Simulator;
-
+            System.Threading.Thread.Sleep(5000);
 
             while (true)
             {
-                System.Threading.Thread.Sleep(5000);
-                Debug.Info($"Connected clients: {Settings.Data.Clients.Count}");
-                foreach(var aa in Settings.Data.Clients)
+                if (!this.Simulator.IsConnected())
                 {
-                    Debug.Info($"Id: {aa.Value.ClientId} - last con: {aa.Value.DateTimeLast.ToString()}");
+                    Debug.Warning("No simulator connected");
+                    //  Simulator is not online. can we get it online.
+                    this.Simulator.Connect();
                 }
+
+                System.Threading.Thread.Sleep(5000);
+                //Debug.Info($"Connected clients: {Settings.Data.Clients.Count}");
+                //foreach(var aa in Settings.Data.Clients)
+                //{
+                //    Debug.Info($"Id: {aa.Value.ClientId} - last con: {aa.Value.DateTimeLast.ToString()}");
+                //}
                 
 
-            }
-
-
-
-            if (Cs.Settings.DebugToConsole)
-            {
-                ZDebug = "sdfsdf";
-            }
-            
-            if (Settings.DebugToConsole)
-            {
-                ZDebug = "sdfdsf";
             }
 
             
