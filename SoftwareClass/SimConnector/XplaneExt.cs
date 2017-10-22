@@ -60,7 +60,12 @@ namespace Cs.Software.SimConnector
         public bool IsConnected()
         {
             if (this.ExtPlane != null)
+            {
+                var dfdsf = this.ExtPlane.IsConnected();
+
                 return this.ExtPlane.IsConnected();
+            }
+                
 
             return false;
 

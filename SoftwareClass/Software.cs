@@ -112,6 +112,8 @@ namespace Cs.Software
                     this.Simulator.Connect();
                 }
 
+                var dddf = this.Simulator.IsConnected();
+
                 if (!this.Simulator.IsConnected())
                 {
 

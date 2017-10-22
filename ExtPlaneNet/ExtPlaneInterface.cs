@@ -42,6 +42,11 @@ namespace ExtPlaneNetCore
         public bool IsConnected()
         {
             if (Socket != null)
+            {
+                return Socket.Connected;
+
+            }
+            if (Socket != null)
                 return true;
 
             return false;
@@ -49,7 +54,15 @@ namespace ExtPlaneNetCore
         public void Connect()
         {
             if (Socket != null)
-                throw new InvalidOperationException("Can't connect: already connected");
+            {
+                if (Socket.Connected)
+                {
+                    //  Already connected.
+                    return;
+
+                }
+            }
+                // throw new InvalidOperationException("Can't connect: already connected");
 
             try
             {
