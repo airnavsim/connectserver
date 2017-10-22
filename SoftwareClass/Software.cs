@@ -112,6 +112,18 @@ namespace Cs.Software
                     this.Simulator.Connect();
                 }
 
+                if (!this.Simulator.IsConnected())
+                {
+
+                    //  if simulator not connected. Tell connected client the information.
+                    foreach (var cl in Settings.Data.Clients)
+                    {
+                        Server.SendMessageToClient(cl.Value.Soc, "status", true);
+                    }
+
+                }
+
+
                 System.Threading.Thread.Sleep(5000);
                 //Debug.Info($"Connected clients: {Settings.Data.Clients.Count}");
                 //foreach(var aa in Settings.Data.Clients)

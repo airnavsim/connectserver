@@ -159,7 +159,7 @@ namespace Cs.Software.Handlers
 
                 client.Soc.Send(Encoding.ASCII.GetBytes("Authenticated\r\n"));
                 //  Send status to client about system
-                this.SendStatus(client.Soc);
+                this.SendMessageToClientFunction(client.Soc, "status");
 
                 Debug.Info($"Client id:{client.ClientId} | Name: {client.ClientName} is Authenticated");
 
@@ -247,11 +247,7 @@ namespace Cs.Software.Handlers
             
         }
 
-        private void SendStatus(Socket client)
-        {
-            client.Send(Encoding.ASCII.GetBytes($"sim:connected:{Settings.Simulator.Connected.ToString().ToLower()}\r\n"));
-               
-        }
+
         private static string ReadData(Socket client)
         {
             // string retVal;
@@ -285,6 +281,51 @@ namespace Cs.Software.Handlers
             return myCompleteMessage.ToString().ToLower().Trim();
         }
 
+
+        #region Message send to clients.
+
+        
+        public void SendMessageToClient(Socket socket, string Message, Boolean SendinTaskMode = false)
+        {
+            if (SendinTaskMode)
+                Task.Run(() => SendMessageToClientFunction(socket, Message));
+            else
+                SendMessageToClientFunction(socket, Message);
+        }
+
+        private void SendMessageToClientFunction(Socket socket, string tmpMessage)
+        {
+            string MessageToSend = SendCommands(tmpMessage);
+
+
+
+            try
+            {
+                socket.Send(Encoding.ASCII.GetBytes(MessageToSend));
+            }
+            catch
+            {
+
+            }
+
+
+        }
+        private string SendCommands(string command)
+        {
+            if (command == "status")
+            {
+                string tmpmsg = $"sim:connected:{Settings.Simulator.Connected.ToString().ToLower()}\r\n";
+                tmpmsg += $"sim:inflight:{Settings.Simulator.InFlight.ToString().ToLower()}\r\n";
+
+                if (Settings.Simulator.InFlight)
+                    tmpmsg += $"sim:flightid:{Settings.Simulator.InFlightId.ToString()}\r\n";
+
+                command = tmpmsg;
+            }
+
+            return command;
+
+        }
         public void SendValuesToConnectedClients(string sensorName)
         {
             Console.WriteLine("????????" + sensorName);
@@ -312,6 +353,8 @@ namespace Cs.Software.Handlers
             //    // newSocket.Send(Encoding.ASCII.GetBytes("Hello socket!"));
             //}
         }
+
+        #endregion
 
     }
 

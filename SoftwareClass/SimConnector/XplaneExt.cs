@@ -24,18 +24,24 @@ namespace Cs.Software.SimConnector
             this.ExtPlane.Host = Settings.Simulator.Host;
             this.ExtPlane.Port = Settings.Simulator.Port;
 
-            this.ExtPlane.Connect();
-
-            if (this.ExtPlane.IsConnected())
+            if (Settings.Simulator.ConnectedShodBe)
             {
-                Debug.Info("sim connected!!");
-                Settings.Simulator.Connected = true;
-                Settings.Simulator.DateTimeConnected = DateTime.UtcNow;
+                this.ExtPlane.Connect();
+                if (this.ExtPlane.IsConnected())
+                {
+                    Debug.Info("sim connected!!");
+                    Settings.Simulator.Connected = true;
+                    Settings.Simulator.DateTimeConnected = DateTime.UtcNow;
+                }
+                else
+                {
+                    Debug.Info("Sim not connected");
+                    Settings.Simulator.Connected = false;
+                    Settings.Simulator.InFlight = false;
+                    Settings.Simulator.InFlightId = 0;
+                }
+                    
             }
-            else
-                Debug.Info("Sim not connected");
-            
-            
 
         }
 

@@ -10,6 +10,8 @@ namespace Cs.SettingsModel.Models
         
         public bool Connected { get; set; }
         public bool ConnectedShodBe { get; set; }
+        public bool InFlight { get; set; }
+        public ulong InFlightId { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
         public string UserName { get; set; }
