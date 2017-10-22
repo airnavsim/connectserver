@@ -18,7 +18,6 @@
     <ProjectReference Include="..\ExtPlaneNet\ExtPlaneNet.csproj" />
     <ProjectReference Include="..\Model\Model.csproj" />
     <ProjectReference Include="..\Settings\Settings.csproj" />
-    <ProjectReference Include="..\standardModelTest\standardModelTest.csproj" />
   </ItemGroup>
 
 </Project>

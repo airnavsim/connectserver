@@ -13,6 +13,6 @@ namespace Cs.Model.Database
         public string Name { get; set; }
         public string Value { get; set; }
 
-        // test data
+        
     }
 }
