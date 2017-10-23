@@ -32,6 +32,14 @@ namespace Cs.Software.SimConnector
                     Debug.Info("sim connected!!");
                     Settings.Simulator.Connected = true;
                     Settings.Simulator.DateTimeConnected = DateTime.UtcNow;
+
+                    //  Auto subscribe this.
+                    Debug.Info("subscribe default sensors");
+                    this.Subscribe(51, null);
+                    this.Subscribe(110, null);
+                    this.Subscribe(210, null);
+                    
+                    
                 }
                 else
                 {
@@ -88,11 +96,15 @@ namespace Cs.Software.SimConnector
                 return "supdate:{sensorId}:dontexist\r\n";
             }
 
-            if (!aa.CollectingClientsGuid.Contains(clientGuid))
+            if (!string.IsNullOrEmpty(clientGuid))
             {
-                //  Client dont exist in sensorid Update system. Add
-                aa.CollectingClientsGuid.Add(clientGuid);
+                if (!aa.CollectingClientsGuid.Contains(clientGuid))
+                {
+                    //  Client dont exist in sensorid Update system. Add
+                    aa.CollectingClientsGuid.Add(clientGuid);
+                }
             }
+
 
             if (!aa.CollectingEnable)
             {
@@ -161,7 +173,7 @@ namespace Cs.Software.SimConnector
             }
 
 
-            Debug.Info($"{sensorId} - {refName} - {refValue}");
+            // Debug.Info($"{sensorId} - {refName} - {refValue}");
         }
         public string UnSubscribe(ulong sensorId, string clientGuid)
         {
@@ -174,6 +186,9 @@ namespace Cs.Software.SimConnector
             {
                 return Settings.Data.Sensors[sensorId];
             }
+
+            // TODO  Check if sensor exist in database.
+
             return null;
         }
 

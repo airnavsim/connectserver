@@ -112,7 +112,8 @@ namespace Cs.Software
                     this.Simulator.Connect();
                 }
 
-                var dddf = this.Simulator.IsConnected();
+
+                // var dddf = this.Simulator.IsConnected();
 
                 if (!this.Simulator.IsConnected())
                 {
@@ -125,6 +126,38 @@ namespace Cs.Software
 
                 }
 
+                if (this.Simulator.IsConnected())
+                {
+                    if (!Settings.Data.Sensors[51].CollectingEnable)
+                        this.Simulator.Subscribe(51, null);
+                    if (!Settings.Data.Sensors[110].CollectingEnable)
+                        this.Simulator.Subscribe(110, null);
+                    if (!Settings.Data.Sensors[210].CollectingEnable)
+                        this.Simulator.Subscribe(210, null);
+
+                    //  do some change to sensordata.
+                    //Settings.Data.Sensors[51].CollectingEnable = true;
+                    //Settings.Data.Sensors[110].CollectingEnable = true;
+                    //Settings.Data.Sensors[210].CollectingEnable = true;
+                }
+                /*
+                 *                     this.Subscribe(51, null);
+                    this.Subscribe(110, null);
+                    this.Subscribe(210, null);
+                 * */
+
+                if (!Settings.Simulator.InFlight)
+                {
+                    if ((Convert.ToDouble(Settings.Data.Sensors[110]._Value.Replace(".",",")) >= 30) && (Convert.ToDouble(Settings.Data.Sensors[210]._Value.Replace(".",",")) >=500))
+                    {
+                        Settings.Simulator.InFlight = true;
+                        Debug.Info("Inflight mode active");
+                    }
+                }
+
+                Console.WriteLine($"sensor: {Settings.Data.Sensors[51].Id}  (heading)  5exist: {Settings.Data.Sensors[51]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[51]._Value}");
+                //Console.WriteLine($"sensor: {Settings.Data.Sensors[110].Id} (speed)    exist: {Settings.Data.Sensors[110]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[110]._Value}");
+                //Console.WriteLine($"sensor: {Settings.Data.Sensors[210].Id} (altitude) exist: {Settings.Data.Sensors[210]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[210]._Value}");
 
                 System.Threading.Thread.Sleep(5000);
                 //Debug.Info($"Connected clients: {Settings.Data.Clients.Count}");
@@ -205,6 +238,10 @@ namespace Cs.Software
             this.SensorReloadFromDatabase();
 
 
+
+            #region old system
+
+
             //Settings.Data.Sensors.Add(1, new Model.Data.SensorModel()
             //{
             //    CollectingClientsGuid = new List<string>(),
@@ -245,6 +282,10 @@ namespace Cs.Software
             //    Subscribeaccuracy = 0.01f,
             //    _ValueExist = false
             //});
+
+            #endregion
+
+
         }
 
         private void SensorReloadFromDatabase()
