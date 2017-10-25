@@ -103,6 +103,10 @@ namespace Cs.Software
 
             System.Threading.Thread.Sleep(5000);
             DateTime StatusToClientLastSend = Convert.ToDateTime("2000-01-01 01:01:01");
+            Dictionary<string, DateTime> Timers = new Dictionary<string, DateTime>();
+            
+            List<double> TempFulesData = new List<double>();
+
             while (true)
             {
                 if (!this.Simulator.IsConnected())
@@ -140,12 +144,19 @@ namespace Cs.Software
 
                 if (this.Simulator.IsConnected())
                 {
+                    if (!Timers.ContainsKey("fuel"))
+                        Timers.Add("fuel", DateTime.UtcNow);
+
+
                     if (!Settings.Data.Sensors[51].CollectingEnable)
                         this.Simulator.Subscribe(51, null);
                     if (!Settings.Data.Sensors[110].CollectingEnable)
                         this.Simulator.Subscribe(110, null);
                     if (!Settings.Data.Sensors[210].CollectingEnable)
                         this.Simulator.Subscribe(210, null);
+
+                    if (!Settings.Data.Sensors[601].CollectingEnable)
+                        this.Simulator.Subscribe(601, null);
 
                     //  do some change to sensordata.
                     //Settings.Data.Sensors[51].CollectingEnable = true;
@@ -161,11 +172,28 @@ namespace Cs.Software
                         }
                     }
 
-                    Console.WriteLine($"sensor: {Settings.Data.Sensors[51].Id}  (heading)  5exist: {Settings.Data.Sensors[51]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[51]._Value}");
+                    // Console.WriteLine($"sensor: {Settings.Data.Sensors[51].Id}  (heading)  exist: {Settings.Data.Sensors[51]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[51]._Value}");
                     //Console.WriteLine($"sensor: {Settings.Data.Sensors[110].Id} (speed)    exist: {Settings.Data.Sensors[110]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[110]._Value}");
                     //Console.WriteLine($"sensor: {Settings.Data.Sensors[210].Id} (altitude) exist: {Settings.Data.Sensors[210]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[210]._Value}");
 
 
+                    // Fuel calculator
+                    if (Settings.Data.Sensors[601] != null)
+                    {
+                        if (!string.IsNullOrEmpty(Settings.Data.Sensors[601]._Value))
+                        {
+                            // Console.WriteLine(Settings.Data.Sensors[601]._Value);
+
+                            string[] aa = Settings.Data.Sensors[601]._Value.Split('|');
+                            double TotValue = 0;
+                            foreach (var ab in aa)
+                            {
+                                TotValue += Convert.ToDouble(ab.Replace(".",","));
+                            }
+
+                            Console.WriteLine($"Tot: {TotValue}  kg sec.  {TotValue * 60} kg per min");
+                        }
+                    }
 
                 }
                 /*
