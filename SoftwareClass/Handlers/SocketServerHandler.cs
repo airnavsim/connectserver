@@ -159,7 +159,7 @@ namespace Cs.Software.Handlers
 
                 client.Soc.Send(Encoding.ASCII.GetBytes("Authenticated\r\n"));
                 //  Send status to client about system
-                this.SendMessageToClientFunction(client.Soc, "status");
+                this.SendMessageToClientFunction(client.Guid, "status");
 
                 Debug.Info($"Client id:{client.ClientId} | Name: {client.ClientName} is Authenticated");
 
@@ -285,29 +285,38 @@ namespace Cs.Software.Handlers
         #region Message send to clients.
 
         
-        public void SendMessageToClient(Socket socket, string Message, Boolean SendinTaskMode = false)
+        public void SendMessageToClient(string clientGuId, string Message, Boolean SendinTaskMode = false)
         {
             if (SendinTaskMode)
-                Task.Run(() => SendMessageToClientFunction(socket, Message));
+                Task.Run(() => SendMessageToClientFunction(clientGuId, Message));
             else
-                SendMessageToClientFunction(socket, Message);
+                SendMessageToClientFunction(clientGuId, Message);
         }
 
-        private void SendMessageToClientFunction(Socket socket, string tmpMessage)
+        private void SendMessageToClientFunction(string ClientGuId, string tmpMessage)
         {
             string MessageToSend = SendCommands(tmpMessage);
 
 
-
-            try
-            {
-                socket.Send(Encoding.ASCII.GetBytes(MessageToSend));
-            }
-            catch
+            if (Settings.Data.Clients.ContainsKey(ClientGuId))
             {
 
-            }
+            
+                try
+                {
+                    Settings.Data.Clients[ClientGuId].Soc.Send(Encoding.ASCII.GetBytes(MessageToSend));
+                }
+                catch
+                {
+                    if (!Settings.Data.Clients[ClientGuId].Soc.Connected)
+                    {
+                        //  Client is not connected. remove client from clientList.
+                        Settings.Data.Clients.Remove(ClientGuId);
+                    
+                    }
+                }
 
+            }
 
         }
         private string SendCommands(string command)

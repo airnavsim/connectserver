@@ -102,7 +102,7 @@ namespace Cs.Software
             this.ConnectToSimulator();
 
             System.Threading.Thread.Sleep(5000);
-
+            DateTime StatusToClientLastSend = Convert.ToDateTime("2000-01-01 01:01:01");
             while (true)
             {
                 if (!this.Simulator.IsConnected())
@@ -115,16 +115,28 @@ namespace Cs.Software
 
                 // var dddf = this.Simulator.IsConnected();
 
-                if (!this.Simulator.IsConnected())
+                if ((DateTime.UtcNow - StatusToClientLastSend).TotalSeconds >=60)
                 {
 
-                    //  if simulator not connected. Tell connected client the information.
+                
                     foreach (var cl in Settings.Data.Clients)
                     {
-                        Server.SendMessageToClient(cl.Value.Soc, "status", true);
+                        Server.SendMessageToClient(cl.Key, "status", true);
                     }
+                    StatusToClientLastSend = DateTime.UtcNow;
 
                 }
+
+                //if (!this.Simulator.IsConnected())
+                //{
+
+                //    //  if simulator not connected. Tell connected client the information.
+                //    foreach (var cl in Settings.Data.Clients)
+                //    {
+                //        Server.SendMessageToClient(cl.Value.Soc, "status", true);
+                //    }
+
+                //}
 
                 if (this.Simulator.IsConnected())
                 {
@@ -139,6 +151,22 @@ namespace Cs.Software
                     //Settings.Data.Sensors[51].CollectingEnable = true;
                     //Settings.Data.Sensors[110].CollectingEnable = true;
                     //Settings.Data.Sensors[210].CollectingEnable = true;
+
+                    if (!Settings.Simulator.InFlight)
+                    {
+                        if ((Convert.ToDouble(Settings.Data.Sensors[110]._Value.Replace(".", ",")) >= 30) && (Convert.ToDouble(Settings.Data.Sensors[210]._Value.Replace(".", ",")) >= 500))
+                        {
+                            Settings.Simulator.InFlight = true;
+                            Debug.Info("Inflight mode active");
+                        }
+                    }
+
+                    Console.WriteLine($"sensor: {Settings.Data.Sensors[51].Id}  (heading)  5exist: {Settings.Data.Sensors[51]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[51]._Value}");
+                    //Console.WriteLine($"sensor: {Settings.Data.Sensors[110].Id} (speed)    exist: {Settings.Data.Sensors[110]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[110]._Value}");
+                    //Console.WriteLine($"sensor: {Settings.Data.Sensors[210].Id} (altitude) exist: {Settings.Data.Sensors[210]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[210]._Value}");
+
+
+
                 }
                 /*
                  *                     this.Subscribe(51, null);
@@ -146,18 +174,6 @@ namespace Cs.Software
                     this.Subscribe(210, null);
                  * */
 
-                if (!Settings.Simulator.InFlight)
-                {
-                    if ((Convert.ToDouble(Settings.Data.Sensors[110]._Value.Replace(".",",")) >= 30) && (Convert.ToDouble(Settings.Data.Sensors[210]._Value.Replace(".",",")) >=500))
-                    {
-                        Settings.Simulator.InFlight = true;
-                        Debug.Info("Inflight mode active");
-                    }
-                }
-
-                Console.WriteLine($"sensor: {Settings.Data.Sensors[51].Id}  (heading)  5exist: {Settings.Data.Sensors[51]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[51]._Value}");
-                //Console.WriteLine($"sensor: {Settings.Data.Sensors[110].Id} (speed)    exist: {Settings.Data.Sensors[110]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[110]._Value}");
-                //Console.WriteLine($"sensor: {Settings.Data.Sensors[210].Id} (altitude) exist: {Settings.Data.Sensors[210]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[210]._Value}");
 
                 System.Threading.Thread.Sleep(5000);
                 //Debug.Info($"Connected clients: {Settings.Data.Clients.Count}");

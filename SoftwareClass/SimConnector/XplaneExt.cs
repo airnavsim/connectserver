@@ -84,7 +84,7 @@ namespace Cs.Software.SimConnector
         {
             if (!this.ExtPlane.IsConnected())
             {
-                return "error:nosim";
+                return "error:nosim\r\n";
             }
 
             //  get sensor informaton
