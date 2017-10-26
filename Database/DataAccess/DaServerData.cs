@@ -24,6 +24,39 @@ namespace Cs.Communication.Database.DataAccess
             this.QueryWasDone = false;
 
         }
+        #region TblFlightInfoTemp
+
+        public Boolean TblFlightInfoTemp_InsertNewRow(string flightId,string latitude, string longitude, string speed, string speedgs, string altitude, string heading, string fuelflow, string weighttot)
+        {
+            this.QueryWasDone = false;
+
+            var InsertData = new Tools.BuildSqlString();
+            InsertData.Insert("datelogvalue", DateTime.UtcNow.ToString());
+            InsertData.Insert("flightid", flightId);
+            InsertData.Insert("latitude", latitude);
+            InsertData.Insert("longitude", longitude);
+            InsertData.Insert("speed", speed);
+            InsertData.Insert("speedgs", speedgs);
+            InsertData.Insert("altitude", altitude);
+            InsertData.Insert("heading", heading);
+            InsertData.Insert("fuelflow", fuelflow);
+            InsertData.Insert("weighttot", weighttot);
+
+            this.DbMaria.QuerySql = InsertData.ReturnInsertSqlString("tblflightinfotemp");
+            this.DbMaria.ExecuteQueryInsertReturnRowIdInt64(false, false);
+
+            if (this.DbMaria.QueryWasDone)
+            {
+                this.QueryWasDone = true;
+                return true;
+            }
+
+            this.QueryWasDone = false;
+            this.ErrorEvent();
+            return false;
+
+        }
+        #endregion
 
         #region TblSetting
 
@@ -89,6 +122,8 @@ namespace Cs.Communication.Database.DataAccess
             return hh;
         }
         #endregion
+
+
         private void ErrorEvent()
         {
             this.ErrorEvent("daServerData error");

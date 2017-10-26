@@ -21,6 +21,7 @@ namespace Cs.Software.SimConnector
             if (this.ExtPlane == null)
                 this.ExtPlane = new ExtPlaneNetCore.ExtPlaneInterface();
 
+            this.ExtPlane.UpdateInterval = 0.33f;
             this.ExtPlane.Host = Settings.Simulator.Host;
             this.ExtPlane.Port = Settings.Simulator.Port;
 
@@ -32,12 +33,18 @@ namespace Cs.Software.SimConnector
                     Debug.Info("sim connected!!");
                     Settings.Simulator.Connected = true;
                     Settings.Simulator.DateTimeConnected = DateTime.UtcNow;
+                    
+
 
                     //  Auto subscribe this.
                     Debug.Info("subscribe default sensors");
-                    this.Subscribe(51, null);
-                    this.Subscribe(110, null);
-                    this.Subscribe(210, null);
+                    foreach(var aa in Settings.Simulator.SensorsAutoCollect)
+                    {
+                        this.Subscribe(aa, null);
+                    }
+                    //this.Subscribe(51, null);
+                    //this.Subscribe(110, null);
+                    //this.Subscribe(210, null);
                     
                     
                 }
@@ -59,6 +66,7 @@ namespace Cs.Software.SimConnector
             {
                 if (this.ExtPlane.IsConnected())
                 {
+
                     this.ExtPlane.Disconnect();
                     Debug.Info("Simulator disconnected");
                 }
@@ -67,10 +75,14 @@ namespace Cs.Software.SimConnector
 
         public bool IsConnected()
         {
+            if (this.ExtPlane == null)
+                return false;
+
             if (this.ExtPlane != null)
             {
                 var dfdsf = this.ExtPlane.IsConnected();
 
+                var dsfdsf = "sdfdsf";
                 return this.ExtPlane.IsConnected();
             }
                 
@@ -172,6 +184,8 @@ namespace Cs.Software.SimConnector
                 }
             }
 
+            //  update settings simulator when last message was recived
+            Settings.Simulator.DateTimeLastMessage = DateTime.UtcNow;
 
             // Debug.Info($"{sensorId} - {refName} - {refValue}");
         }
@@ -193,7 +207,10 @@ namespace Cs.Software.SimConnector
         }
 
 
-
+        public void test()
+        {
+            
+        }
 
         public string GetValue(ulong sensorId)
         {

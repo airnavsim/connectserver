@@ -34,6 +34,14 @@ namespace ExtPlaneNetCore.InputProcessors
             Type type = DataRef.ParseType(rawType);
             object value = DataRef.ParseValue(rawValue, type);
             DataRef dataRef = DataRefRepository.Get(name, type);
+            //if (dataRef == null)
+            //{
+                
+            //    dataRef = DataRefRepository.Get(name, typeof(string));
+            //    var dfdsf = "sdfdsf";
+            //}
+                
+
 
             dataRef.SetValue(value);
         }

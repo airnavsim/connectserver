@@ -87,6 +87,22 @@ namespace Cs.Software
             this.SensorDataLoad();
             #endregion
 
+            #region Set default sensors to read
+            Settings.Simulator.SensorsAutoCollect = new List<ulong>
+            {
+                1,               //   Latitude
+                2,               //   longitude
+                10,             //  Simulator running time in sec
+                51,              //   heading mag compass
+                110,             //  airspeed
+                120,            //  ground speed
+                210,             //  Altitude
+                601,             //  Fuel flow
+                700             //  Weight total
+            };
+
+            #endregion
+
             this.SimulatorInit();
 
             #region Start socket server
@@ -104,7 +120,8 @@ namespace Cs.Software
             System.Threading.Thread.Sleep(5000);
             DateTime StatusToClientLastSend = Convert.ToDateTime("2000-01-01 01:01:01");
             Dictionary<string, DateTime> Timers = new Dictionary<string, DateTime>();
-            
+            Boolean SimulatorReconnect = false;
+
             List<double> TempFulesData = new List<double>();
 
             while (true)
@@ -131,44 +148,26 @@ namespace Cs.Software
 
                 }
 
-                //if (!this.Simulator.IsConnected())
-                //{
-
-                //    //  if simulator not connected. Tell connected client the information.
-                //    foreach (var cl in Settings.Data.Clients)
-                //    {
-                //        Server.SendMessageToClient(cl.Value.Soc, "status", true);
-                //    }
-
-                //}
 
                 if (this.Simulator.IsConnected())
                 {
                     if (!Timers.ContainsKey("fuel"))
                         Timers.Add("fuel", DateTime.UtcNow);
+                    if (!Timers.ContainsKey("dbsaveflight"))
+                        Timers.Add("dbsaveflight", DateTime.UtcNow);
 
-
-                    if (!Settings.Data.Sensors[51].CollectingEnable)
-                        this.Simulator.Subscribe(51, null);
-                    if (!Settings.Data.Sensors[110].CollectingEnable)
-                        this.Simulator.Subscribe(110, null);
-                    if (!Settings.Data.Sensors[210].CollectingEnable)
-                        this.Simulator.Subscribe(210, null);
-
-                    if (!Settings.Data.Sensors[601].CollectingEnable)
-                        this.Simulator.Subscribe(601, null);
-
-                    //  do some change to sensordata.
-                    //Settings.Data.Sensors[51].CollectingEnable = true;
-                    //Settings.Data.Sensors[110].CollectingEnable = true;
-                    //Settings.Data.Sensors[210].CollectingEnable = true;
 
                     if (!Settings.Simulator.InFlight)
                     {
-                        if ((Convert.ToDouble(Settings.Data.Sensors[110]._Value.Replace(".", ",")) >= 30) && (Convert.ToDouble(Settings.Data.Sensors[210]._Value.Replace(".", ",")) >= 500))
+                        if ((Settings.Data.Sensors[110] != null) && (Settings.Data.Sensors[210] != null))
                         {
-                            Settings.Simulator.InFlight = true;
-                            Debug.Info("Inflight mode active");
+
+                        
+                            if ((Convert.ToDouble(Settings.Data.Sensors[110]._Value.Replace(".", ",")) >= 30) && (Convert.ToDouble(Settings.Data.Sensors[210]._Value.Replace(".", ",")) >= 500))
+                            {
+                                Settings.Simulator.InFlight = true;
+                                Debug.Info("Inflight mode active");
+                            }
                         }
                     }
 
@@ -177,25 +176,125 @@ namespace Cs.Software
                     //Console.WriteLine($"sensor: {Settings.Data.Sensors[210].Id} (altitude) exist: {Settings.Data.Sensors[210]._ValueExist.ToString()}  Value:  {Settings.Data.Sensors[210]._Value}");
 
 
-                    // Fuel calculator
-                    if (Settings.Data.Sensors[601] != null)
-                    {
-                        if (!string.IsNullOrEmpty(Settings.Data.Sensors[601]._Value))
-                        {
-                            // Console.WriteLine(Settings.Data.Sensors[601]._Value);
 
-                            string[] aa = Settings.Data.Sensors[601]._Value.Split('|');
-                            double TotValue = 0;
-                            foreach (var ab in aa)
+                    // Fuel calculator
+                    //if ((Settings.Data.Sensors[601] != null) && (Settings.Data.Sensors[700] != null))
+                    //{
+                    //    if (!string.IsNullOrEmpty(Settings.Data.Sensors[601]._Value))
+                    //    {
+                    //        // Console.WriteLine(Settings.Data.Sensors[601]._Value);
+
+                    //        string[] aa = Settings.Data.Sensors[601]._Value.Split('|');
+                    //        double TotValue = 0;
+                    //        foreach (var ab in aa)
+                    //        {
+                    //            TotValue += Convert.ToDouble(ab.Replace(".",","));
+                    //        }
+
+                    //        Console.WriteLine($"Fuel flow: {TotValue * 60} kg per min | Weight: {Settings.Data.Sensors[700]._Value}");
+                    //    }
+                    //}
+
+                    #region Infligt operations
+                    if (Settings.Simulator.InFlight)
+                    {
+                        #region Collect fuel usage every 10 sek
+                        if (Settings.Data.Sensors[601] != null)
+                        {
+                            if ((DateTime.UtcNow - Timers["fuel"]).TotalSeconds >= 10)
                             {
-                                TotValue += Convert.ToDouble(ab.Replace(".",","));
+                                string[] aa = Settings.Data.Sensors[601]._Value.Split('|');
+                                double TotValue = 0;
+                                foreach (var ab in aa)
+                                {
+                                    TotValue += Convert.ToDouble(ab.Replace(".", ","));
+                                }
+                                TempFulesData.Add(TotValue);
+                                Timers["fuel"] = DateTime.UtcNow;
+                            }
+                        }
+                        #endregion
+
+
+                        #region Save flight info to database.
+                        if ((DateTime.UtcNow - Timers["dbsaveflight"]).TotalSeconds >= 60)
+                        {
+                            string latitude, longitude, heading, speed, speedgs, altitude, fuelflow, weightTotal;
+
+                            if (Settings.Data.Sensors[1] != null)
+                                latitude = Settings.Data.Sensors[1]._Value;
+                            else
+                                latitude = "nodata";
+
+                            if (Settings.Data.Sensors[2] != null)
+                                longitude = Settings.Data.Sensors[2]._Value;
+                            else
+                                longitude = "nodata";
+
+
+                            if (Settings.Data.Sensors[51] != null)
+                                heading = Settings.Data.Sensors[51]._Value;
+                            else
+                                heading = "nodata";
+
+                            if (Settings.Data.Sensors[110] != null)
+                                speed = Settings.Data.Sensors[110]._Value;
+                            else
+                                speed = "nodata";
+
+                            if (Settings.Data.Sensors[120] != null)
+                                speedgs = Settings.Data.Sensors[120]._Value;
+                            else
+                                speedgs = "nodata";
+
+                            if (Settings.Data.Sensors[210] != null)
+                                altitude = Settings.Data.Sensors[210]._Value;
+                            else
+                                altitude = "nodata";
+
+                            if (TempFulesData.Count == 0)
+                                fuelflow = "nodata";
+                            else
+                            {
+                                double Flow = 0;
+                                foreach (var fdata in TempFulesData)
+                                {
+                                    Flow += fdata;
+                                }
+                                fuelflow = ((Flow / TempFulesData.Count) * 60).ToString().Replace(",", ".");
+                                TempFulesData.Clear();
                             }
 
-                            Console.WriteLine($"Tot: {TotValue}  kg sec.  {TotValue * 60} kg per min");
-                        }
-                    }
+                            //  Fuel flow information.
 
+
+
+                            if (Settings.Data.Sensors[700] != null)
+                                weightTotal = Settings.Data.Sensors[700]._Value;
+                            else
+                                weightTotal = "nodata";
+
+                            this.DaServerData.TblFlightInfoTemp_InsertNewRow(Settings.Simulator.InFlightId.ToString(), latitude, longitude, speed, speedgs, altitude, heading, fuelflow, weightTotal);
+                            Timers["dbsaveflight"] = DateTime.UtcNow;
+                        }
+                        #endregion
+
+                    }
+                    #endregion
+
+
+                    if ((DateTime.UtcNow - Settings.Simulator.DateTimeLastMessage).TotalSeconds >= 20)
+                    {
+                        Console.WriteLine("no simulator message for more then 20 sek!!!");
+                        // var dsfd = this.Simulator.IsConnected();
+                        this.Simulator.Disconnect();
+                        Settings.Simulator.Connected = false;
+                        SimulatorReconnect = true;
+                        ZDebug = "sdfdsf";
+                    }
                 }
+
+                
                 /*
                  *                     this.Subscribe(51, null);
                     this.Subscribe(110, null);
@@ -389,3 +488,4 @@ namespace Cs.Software
          * */
     }
 }
+

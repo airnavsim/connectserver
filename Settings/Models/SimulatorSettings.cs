@@ -19,6 +19,8 @@ namespace Cs.SettingsModel.Models
 
         public DateTime DateTimeConnected { get; set; }
         public DateTime DateTimeLastMessage { get; set; }
+
+        public List<ulong> SensorsAutoCollect { get; set; }
     }
     public enum SimTypeEnum { nosim = 0, xplane11Ext = 1}
 }

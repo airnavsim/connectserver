@@ -43,6 +43,9 @@ namespace ExtPlaneNetCore
         {
             if (Socket != null)
             {
+                // var sdf = Socket.Connected;
+
+                // var dsfds = "sdfdsf";
                 return Socket.Connected;
 
             }
