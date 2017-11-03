@@ -111,7 +111,8 @@ namespace ExtPlaneNetCore
 
             if (SenderTask != null)
             {
-                SenderTask.Wait();
+                //  Remove this line and se if that fix the problem.
+                // SenderTask.Wait();
                 SenderTask = null;
             }
 

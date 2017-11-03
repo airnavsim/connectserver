@@ -98,7 +98,8 @@ namespace Cs.Software
                 120,            //  ground speed
                 210,             //  Altitude
                 601,             //  Fuel flow
-                700             //  Weight total
+                700,             //  Weight total
+                5000,5001
             };
 
             #endregion
@@ -162,12 +163,21 @@ namespace Cs.Software
                         if ((Settings.Data.Sensors[110] != null) && (Settings.Data.Sensors[210] != null))
                         {
 
-                        
-                            if ((Convert.ToDouble(Settings.Data.Sensors[110]._Value.Replace(".", ",")) >= 30) && (Convert.ToDouble(Settings.Data.Sensors[210]._Value.Replace(".", ",")) >= 500))
+                            if ((Settings.Data.Sensors[110]._ValueExist) && (Settings.Data.Sensors[210]._ValueExist))
                             {
-                                Settings.Simulator.InFlight = true;
-                                Debug.Info("Inflight mode active");
+                                //  Debug code
+                                var ddsfsdf = Settings.Data.Sensors[110]._Value.Replace(".", ",");
+                                var dsfsdfg = Settings.Data.Sensors[210]._Value.Replace(".", ",");
+
+
+
+                                if ((Convert.ToDouble(Settings.Data.Sensors[110]._Value.Replace(".", ",")) >= 30) && (Convert.ToDouble(Settings.Data.Sensors[210]._Value.Replace(".", ",")) >= 500))
+                                {
+                                    Settings.Simulator.InFlight = true;
+                                    Debug.Info("Inflight mode active");
+                                }
                             }
+                            
                         }
                     }
 
@@ -291,6 +301,25 @@ namespace Cs.Software
                         Settings.Simulator.Connected = false;
                         SimulatorReconnect = true;
                         ZDebug = "sdfdsf";
+                    }
+
+
+
+                    if (Settings.Data.Sensors[5000] != null)
+                    {
+                        if (Settings.Data.Sensors[5000]._Value != null)
+                        {
+                            Console.WriteLine($"5000 - {Settings.Data.Sensors[5000]._Value.ToString()}");
+                        }
+                            
+                    }
+                    if (Settings.Data.Sensors[5001] != null)
+                    {
+                        if (Settings.Data.Sensors[5001]._Value != null)
+                        {
+                            Console.WriteLine($"5001 - {Settings.Data.Sensors[5001]._Value.ToString()}");
+                        }
+
                     }
                 }
 
