@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="8.0.9-dmr" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cs.Model.Database\Cs.Model.Database.csproj" />
+    <ProjectReference Include="..\Cs.Model\Cs.Model.csproj" />
+    <ProjectReference Include="..\Cs.Settings\Cs.Settings.csproj" />
+  </ItemGroup>
+
+</Project>

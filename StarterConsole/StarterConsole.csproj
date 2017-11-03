@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DebugHandler\DebugHandler.csproj" />
-    <ProjectReference Include="..\Settings\Settings.csproj" />
-    <ProjectReference Include="..\SoftwareClass\SoftwareClass.csproj" />
+    <ProjectReference Include="..\Cs.DebugHandler\Cs.DebugHandler.csproj" />
+    <ProjectReference Include="..\Cs.Settings\Cs.Settings.csproj" />
+    <ProjectReference Include="..\Cs.Software\Cs.Software.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,8 +6,4 @@
     <AssemblyName>Cs.DebugHandler</AssemblyName>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Settings\Settings.csproj" />
-  </ItemGroup>
-
 </Project>

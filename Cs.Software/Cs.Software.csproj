@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cs.Communication.Database\Cs.Communication.Database.csproj" />
+    <ProjectReference Include="..\Cs.Communication.ExtPlaneNet\Cs.Communication.ExtPlaneNet.csproj" />
+    <ProjectReference Include="..\Cs.DebugHandler\Cs.DebugHandler.csproj" />
+    <ProjectReference Include="..\Cs.Model.Database\Cs.Model.Database.csproj" />
+    <ProjectReference Include="..\Cs.Model\Cs.Model.csproj" />
+    <ProjectReference Include="..\Cs.Settings\Cs.Settings.csproj" />
+  </ItemGroup>
+
+</Project>

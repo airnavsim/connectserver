@@ -8,9 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cs.Model.Database\Cs.Model.Database.csproj" />
-    <ProjectReference Include="..\DebugHandler\DebugHandler.csproj" />
-    <ProjectReference Include="..\Model\Model.csproj" />
-    <ProjectReference Include="..\Settings\Settings.csproj" />
   </ItemGroup>
 
   <ItemGroup>
