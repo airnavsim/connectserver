@@ -14,7 +14,7 @@ namespace Cs
         public static Model.Settings.VersionInformationModel VersionInformation { get; set; }
 
         public static Model.Settings.GlobalSettingsFileServerInfoModel Server { get; set; }
-        
+        public static List<Model.Settings.GlobalSettingsFileServerInfoModel> ServerDb { get; set; }
         public static Model.Data.DataModel Data { get; set; }
 
     }

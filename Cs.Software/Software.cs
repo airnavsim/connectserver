@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Cs.Model.Settings;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -60,6 +62,8 @@ namespace Cs.Software
             #endregion
 
             // var sdfdsf = Settings.Database;
+
+
 
 
             ZDebug = "sdfdsf";
@@ -399,6 +403,29 @@ namespace Cs.Software
                 Debug.Error("Database missing values");
                 return false;
             }
+
+            #region ConnectServer Information from database.
+            if (TmpSettings.ContainsKey("csdata"))
+            {
+                if (string.IsNullOrEmpty(TmpSettings["csdata"].ToString().Trim()))
+                {
+                    Settings.ServerDb = new List<Model.Settings.GlobalSettingsFileServerInfoModel>();
+                }
+                else
+                {
+                    // string readText = File.ReadAllText(tmpGlobalFile);
+                    //List<GlobalSettingsFileServerInfoModel> TmpServerDbRead = JsonConvert.DeserializeObject<List<GlobalSettingsFileServerInfoModel>>(TmpSettings["dbversion"].ToString());
+                    //Settings.ServerDb = TmpServerDbRead;
+
+                    Settings.ServerDb = JsonConvert.DeserializeObject<List<GlobalSettingsFileServerInfoModel>>(TmpSettings["dbversion"].ToString());
+
+
+
+                }
+            }
+
+                var dd = Settings.Server;
+            #endregion
 
             return true;
         }

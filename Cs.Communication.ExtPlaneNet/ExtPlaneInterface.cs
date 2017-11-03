@@ -118,7 +118,7 @@ namespace ExtPlaneNetCore
 
             if (ReceiverTask != null)
             {
-                ReceiverTask.Wait();
+                // ReceiverTask.Wait();
                 ReceiverTask = null;
             }
 
